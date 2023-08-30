@@ -1,4 +1,4 @@
-# cpanel_addon-maldet
+# cpanel_addon-maldet Updated for New WHM
 
 Add Linux Malware Detect (LMD) support to WHM for root users.
 
