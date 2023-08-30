@@ -4,7 +4,7 @@ Add Linux Malware Detect (LMD) support to WHM for root users.
 
 Allows configuration and individual account scanning as well as daily cron setup
 
-Download the latest release here: https://github.com/steadramon/cpanel_addon-maldet/releases
+[No more maintenance] Download the latest release here: https://github.com/steadramon/cpanel_addon-maldet/releases
 
 Install with the following:
 
