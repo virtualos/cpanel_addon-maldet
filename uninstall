@@ -1,0 +1,33 @@
+#!/usr/local/cpanel/3rdparty/bin/perl
+use Config::Tiny;
+
+unlink("/usr/local/cpanel/whostmgr/docroot/addon_plugins/ico-maldet.png");
+unlink("/var/cpanel/apps/maldet.conf");
+
+system "/bin/rm", "-rf", "--", "/var/cpanel/addons/maldet/";
+system "/bin/rm", "-rf", "--", "/usr/local/cpanel/whostmgr/docroot/cgi/addons/maldet";
+system "/bin/rm", "-rf", "--", "/usr/local/cpanel/base/frontend/jupiter/maldet";
+system "/bin/rm", "-rf", "--", "/usr/local/cpanel/whostmgr/docroot/templates/maldet/";
+
+system "/bin/rm", "-f", "--", "/usr/local/cpanel/Cpanel/Plugins/Maldet.pm";
+system "/bin/rm", "-f", "--", "/usr/local/cpanel/Cpanel/API/Maldet.pm";
+system "/bin/rm", "-f", "--", "/usr/local/cpanel/Whostmgr/Maldet.pm";
+
+if ( -x '/usr/local/cpanel/bin/unregister_appconfig' ) {
+    system '/usr/local/cpanel/bin/unregister_appconfig', "appconfig/maldet.conf";
+}
+
+system "/usr/local/cpanel/scripts/uninstall_plugin", "appconfig/maldet.tar.gz";
+
+my $config = Config::Tiny->new;
+my $config_file = "/usr/local/maldetect/conf.maldet.cron";
+$config = Config::Tiny->read( $config_file );
+if ($config->{_}->{'cron_custom_exec'} eq '/usr/local/cpanel/whostmgr/docroot/cgi/addons/maldet/custom.cron') {
+  delete $config->{_}->{'cron_custom_exec'};
+  $config->write( $config_file );
+}
+
+print "cPanel Linux Malware Detect uninstalled from WHM & cPanel.\n";
+print "You will need to remove LMD manually\n";
+
+exit(0);

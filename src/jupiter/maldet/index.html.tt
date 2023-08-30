@@ -1,0 +1,62 @@
+[% SET CPANEL.CPVAR.dprefix = "../" %]
+[%
+USE Uapi;
+USE JSON;
+
+SET maldet_enabled = Uapi.exec('Maldet', 'enabled');
+
+SET maldet_reports = Uapi.exec('Maldet', 'reports');
+
+SET maldet_running = Uapi.exec('Maldet', 'running');
+
+SET maldet_recent = Uapi.exec('Maldet', 'recent');
+
+%]
+
+[% WRAPPER '_assets/master.html.tt'
+    page_title = locale.maketext('Linux Malware Detect')
+    app_key = 'maldet',
+-%]
+[% IF maldet_enabled.data == '1' %]
+<div class="body-content">
+    <p>Scan your home directory for Linux based malware.</p>
+    [% IF CPANEL.feature('maldet'); %]
+      <h2>Scan Homedir</h2>
+      <form action="scan.html">
+      [% IF maldet_running.data == 0 && maldet_recent.data == 0 %]
+        <input type="submit" value="Start Scan" class="btn btn-primary"/>
+      [% ELSE %]
+        <input type="submit" value="Start Scan" class="btn btn-primary" disabled />
+      [% END %]
+      </form>
+      <p><small>Please note you can only run a scan once per hour</small></p>
+    [% END %]
+    <h2>Recent Reports</h2>
+    <table class="table sortable">
+      <tr><th>Scan ID</th><th>Date</th><th>Files</th><th>Hits</th><th>Cleaned</th><th>Runtime</th></tr>
+    [% IF maldet_running.data == 1 %]
+      <tr class="warning"><td colspan="6">Scan running...</td></tr>
+    [% END %]
+    [% FOREACH report IN maldet_reports.data %]
+      <tr class="[% report.hits ? 'warning':'' %]">
+        <td><a title='View Report' href="report.html?report_id=[% report.scanid %]">[% report.scanid %]</a></td>
+        <td>[% report.date %]</td>
+        <td>[% report.files %]</td>
+        <td>[% report.hits %]</td>
+        <td>[% report.cleaned %]</td>
+        <td sorttable_customkey="[% report.runtime %]">[% report.runtime %]s</td>
+      </tr>
+    [% END %]
+    </table>
+</div>
+[% ELSE %]
+<div class="body-content">
+    <h3>User scanning is not enabled on this server, this can be enabled by the administrator.</h3>
+</div>
+[% END %]
+[% IF maldet_running.data == 1 %]
+<script>
+ setTimeout(function(){ location.reload(); }, 10000);
+</script>
+[% END %]
+[% END #wrapper %]
